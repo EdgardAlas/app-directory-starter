@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from '@/components/ui/button';
-import { cn } from '@/utils';
+import { cn } from '@/utils/cn';
 import { forwardRef } from 'react';
 import { CgSpinner } from 'react-icons/cg';
 
