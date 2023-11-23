@@ -1,24 +1,36 @@
 import { connectToDatabase } from '@/database/connection';
+import { createErrorLog } from '@/helpers/create-error-log';
 import { CustomError } from '@/utils/custom-error';
-import { validateRol } from '@/utils/validate-rol';
+import { validateRol } from '@/helpers/validate-rol';
 import { NextRequest, NextResponse } from 'next/server';
 import { ZodError } from 'zod';
+import { Role } from '@/types/roles.types';
 
 type Handler = (
   request: NextRequest,
   params: any
 ) => Promise<NextResponse<unknown>>;
 
-export const handleException =
-  (cb: Handler, roles: string[] = []) =>
+export const handleApi =
+  (
+    cb: Handler,
+    {
+      roles,
+      shouldConnectToDatabase = true,
+    }: { roles: Role[]; shouldConnectToDatabase?: boolean } = {
+      roles: [],
+      shouldConnectToDatabase: true,
+    }
+  ) =>
   async (request: NextRequest, params: unknown) => {
     try {
-      connectToDatabase();
+      if (shouldConnectToDatabase) {
+        await connectToDatabase();
+      }
+
       await validateRol(roles);
       return await cb(request, params);
     } catch (error) {
-      console.log(error);
-      console.log(error);
       if (error instanceof CustomError) {
         return NextResponse.json(
           {
@@ -37,8 +49,10 @@ export const handleException =
         );
       }
 
+      createErrorLog(error as Error);
+
       return NextResponse.json(
-        { message: 'An error has occurred, please try again later' },
+        { message: "Something went wrong, we're working on it" },
         { status: 500 }
       );
     }

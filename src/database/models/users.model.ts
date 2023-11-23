@@ -1,4 +1,4 @@
-import { User } from '@/app/types/user.types';
+import { User } from '@/types/user.types';
 import mongoose, { FilterQuery } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
@@ -76,11 +76,8 @@ export type QueryUsers = FilterQuery<UserDocument>;
 
 schema.plugin(mongoosePaginate);
 
-const MemoryUserModel = mongoose.models
-  .UserAdmin as mongoose.PaginateModel<UserDocument>;
-
 export const UserModel =
-  MemoryUserModel ||
+  (mongoose.models.Users as mongoose.PaginateModel<UserDocument>) ||
   mongoose.model<UserDocument, mongoose.PaginateModel<UserDocument>>(
     'Users',
     schema
