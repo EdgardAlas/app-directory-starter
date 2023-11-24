@@ -1,5 +1,6 @@
 import { CustomError } from '@/utils/custom-error';
 import { getAuth } from '@/helpers/get-auth';
+import { Role } from '@/types/roles.types';
 
 export const validateRol = async (roles: string[]) => {
   if (roles.length === 0) {
@@ -12,7 +13,8 @@ export const validateRol = async (roles: string[]) => {
     throw new CustomError('Unauthorized', 401);
   }
 
-  user.role = user.role.toLowerCase();
+  user.role = user.role.toLowerCase() as Role;
+
   roles = roles.map((role) => role.toLowerCase());
 
   if (user.role === 'admin') {
